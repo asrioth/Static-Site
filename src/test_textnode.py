@@ -1,10 +1,19 @@
 import unittest
 from textnode import TextNode, TextType
+from leafnode import LeafNode
 
 class TestTextNode(unittest.TestCase):
     test_text_one = "This is a text node"
     test_text_two = "This is not a text node"
-    test_url = "test.url"
+    test_url = "https://www.google.com"
+
+    test_prop_one = {
+    "href": test_url
+}
+    test_prop_two = {
+    "src": test_url,
+    "alt": test_text_two
+}
     
     def test_eq(self):    
         node = TextNode(self.test_text_one, TextType.BOLD)
@@ -25,7 +34,25 @@ class TestTextNode(unittest.TestCase):
         test_two_repr = f"TextNode({self.test_text_two}, {TextType.NORMAL.value[0]}, {self.test_url})"
         self.assertEqual(repr(node), test_two_repr)
 
-        
+    def test_text_nod_to_html_node(self):
+        node = TextNode(self.test_text_one, TextType.NORMAL)
+        leaf = LeafNode(None, self.test_text_one)
+        self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
+        node = TextNode(self.test_text_two, TextType.BOLD)
+        leaf = LeafNode("b", self.test_text_two)
+        self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
+        node = TextNode(self.test_text_one, TextType.ITALIC)
+        leaf = LeafNode("i", self.test_text_one)
+        self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
+        node = TextNode(self.test_text_two, TextType.CODE)
+        leaf = LeafNode("code", self.test_text_two)
+        self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
+        node = TextNode(self.test_text_one, TextType.LINKS, self.test_url)
+        leaf = LeafNode("a", self.test_text_one, self.test_prop_one)
+        self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
+        node = TextNode(self.test_text_two, TextType.IMAGES, self.test_url)
+        leaf = LeafNode("img", "", self.test_prop_two)
+        self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
 
 if __name__ == "__main__":
     unittest.main()

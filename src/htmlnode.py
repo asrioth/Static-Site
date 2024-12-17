@@ -1,3 +1,9 @@
+from enum import Enum
+
+class TagState(Enum):
+    START = "start"
+    END = "end"
+
 class HTMLNode():
     def __init__(self, tag = None, value = None, children = None, props = None):
         self.tag = tag
@@ -15,3 +21,11 @@ class HTMLNode():
     
     def __repr__(self):
         return f"HTMLNode({self.tag},{self.value},{self.children},{self.props})"
+    
+    def tag_wrap(self, tag_state = TagState.START):
+        match tag_state:
+            case TagState.START:
+                return f"<{self.tag}>"
+            case TagState.END:
+                return f"</{self.tag}>"
+        
