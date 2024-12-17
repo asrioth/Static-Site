@@ -1,13 +1,11 @@
 from enum import Enum
-from textnode import TextNode
-
-class FakeNum(Enum):
-    FAKE = "fake"
+from textnode import TextNode, TextType
 
 def main():
-    textnode = TextNode("hi", FakeNum.FAKE, "here.com")
-    textnode2 = TextNode("hi", FakeNum.FAKE, "here.com")
+    textnode = TextNode("hi", TextType.BOLD, "here.com")
+    textnode2 = TextNode("hi", TextType.BOLD, "here.com")
     print (textnode)
     print (textnode == textnode2)
 
-main()
+if __name__ == "__main__":
+    main()
