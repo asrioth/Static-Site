@@ -7,12 +7,8 @@ class TextType(Enum):
     ITALIC = "italic",
     CODE = "code",
     LINKS = "links",
-    IMAGES = "images"
-
-test_prop_one = {
-    "href": "https://www.google.com", 
-    "target": "_blank",
-}
+    IMAGES = "images",
+    TEXT = "text"
 
 class TextNode():
     def __init__(self, text, text_type, url = None):
