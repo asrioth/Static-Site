@@ -6,8 +6,8 @@ class TextType(Enum):
     BOLD = "bold",
     ITALIC = "italic",
     CODE = "code",
-    LINKS = "links",
-    IMAGES = "images",
+    LINK = "link",
+    IMAGE = "image",
     TEXT = "text"
 
 class TextNode():
@@ -39,9 +39,9 @@ class TextNode():
                 html_node = LeafNode("i", self.text)
             case TextType.CODE:
                 html_node = LeafNode("code", self.text)
-            case TextType.LINKS:
+            case TextType.LINK:
                 html_node = LeafNode("a", self.text, self.url_to_prop("href"))
-            case TextType.IMAGES:
+            case TextType.IMAGE:
                 props = self.url_to_prop("src")
                 props.update(self.text_to_prop("alt"))
                 html_node = LeafNode("img", "", props)

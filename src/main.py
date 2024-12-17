@@ -7,7 +7,5 @@ def main():
     print(textnode)
     print(textnode == textnode2)
 
-    print(",a,".split(','))
-
 if __name__ == "__main__":
     main()

@@ -47,10 +47,10 @@ class TestTextNode(unittest.TestCase):
         node = TextNode(self.test_text_two, TextType.CODE)
         leaf = LeafNode("code", self.test_text_two)
         self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
-        node = TextNode(self.test_text_one, TextType.LINKS, self.test_url)
+        node = TextNode(self.test_text_one, TextType.LINK, self.test_url)
         leaf = LeafNode("a", self.test_text_one, self.test_prop_one)
         self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
-        node = TextNode(self.test_text_two, TextType.IMAGES, self.test_url)
+        node = TextNode(self.test_text_two, TextType.IMAGE, self.test_url)
         leaf = LeafNode("img", "", self.test_prop_two)
         self.assertEqual(node.text_node_to_html_node().to_html(), leaf.to_html())
 
