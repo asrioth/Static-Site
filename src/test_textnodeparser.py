@@ -42,6 +42,10 @@ class TestTextNodeParser(unittest.TestCase):
         expected_nodes = self.get_expected_nodes(TextNode("code block", TextType.CODE))
         expected_nodes.extend(expected_nodes)
         self.assertEqual(new_nodes, expected_nodes)
+        new_nodes = TextNodeParser.split_nodes_delimiter([TextNode(self.get_text_node_text("**bold****bold2**"), TextType.TEXT)], "**", TextType.BOLD)
+        expected_nodes = self.get_expected_nodes(TextNode("bold", TextType.BOLD))
+        expected_nodes = expected_nodes[:2] + [TextNode("bold2", TextType.BOLD)] + [expected_nodes[-1]]
+        self.assertEqual(new_nodes, expected_nodes)
 
     def test_extract_markdown_images(self):
         images = TextNodeParser.extract_markdown_images(self.image_text)
@@ -126,6 +130,90 @@ class TestTextNodeParser(unittest.TestCase):
         image_nodes = TextNodeParser.split_nodes_link([TextNode(self.image_text, TextType.TEXT), TextNode(self.image_text, TextType.TEXT)])
         expected_nodes = [TextNode(self.image_text, TextType.TEXT), TextNode(self.image_text, TextType.TEXT)]
         self.assertEqual(image_nodes, expected_nodes)
+
+    def test_text_to_textnodes(self):
+        test_text = "This is **text** with an *italic* word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = TextNodeParser.text_to_textnodes(test_text)
+        expected_nodes = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.BOLD),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev")
+        ]
+        self.assertEqual(nodes, expected_nodes)
+
+        test_text = "This is *text* with an **italic** word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = TextNodeParser.text_to_textnodes(test_text)
+        expected_nodes = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.ITALIC),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.BOLD),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev")
+        ]
+        self.assertEqual(nodes, expected_nodes)
+
+        test_text = "This is `text` with an *italic* word and a **code block** and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        nodes = TextNodeParser.text_to_textnodes(test_text)
+        expected_nodes = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.CODE),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.BOLD),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev")
+        ]
+        self.assertEqual(nodes, expected_nodes)
+
+        test_text = "This is `text` with an *italic* word and a **code block** and an [link](https://boot.dev) and a ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg)"
+        nodes = TextNodeParser.text_to_textnodes(test_text)
+        expected_nodes = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text", TextType.CODE),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.BOLD),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg")
+        ]
+        self.assertEqual(nodes, expected_nodes)
+
+        test_text = "This is `text1``text2` with an *italic* word and a **code block** `text3` and an [link](https://boot.dev) and a ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg)"
+        nodes = TextNodeParser.text_to_textnodes(test_text)
+        expected_nodes = [
+            TextNode("This is ", TextType.TEXT),
+            TextNode("text1", TextType.CODE),
+            TextNode("text2", TextType.CODE),
+            TextNode(" with an ", TextType.TEXT),
+            TextNode("italic", TextType.ITALIC),
+            TextNode(" word and a ", TextType.TEXT),
+            TextNode("code block", TextType.BOLD),
+            TextNode(" ", TextType.TEXT),
+            TextNode("text3", TextType.CODE),
+            TextNode(" and an ", TextType.TEXT),
+            TextNode("link", TextType.LINK, "https://boot.dev"),
+            TextNode(" and a ", TextType.TEXT),
+            TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg")
+        ]
+        self.assertEqual(nodes, expected_nodes)
 
 
     

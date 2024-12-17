@@ -11,7 +11,8 @@ class TextNodeParser():
                 if len(split_text) > 1 and len(split_text) % 2 != 0: 
                     for i in range(len(split_text)):
                         if i % 2 == 0:
-                            new_nodes.append(TextNode(split_text[i], TextType.TEXT))
+                            if split_text[i] != "":
+                                new_nodes.append(TextNode(split_text[i], TextType.TEXT))
                         else:
                             new_nodes.append(TextNode(split_text[i], text_type))
                 elif len(split_text) > 1 and len(split_text) % 2 == 0:
@@ -31,7 +32,7 @@ class TextNodeParser():
         return images
     
     def extract_markdown_links(text):
-        matches = re.findall("(?<!!)\[[^\[\]]*\]\([^\(\)]*\)", text)
+        matches = re.findall(r"(?<!!)\[[^\[\]]*\]\([^\(\)]*\)", text)
         pieces = list(map(lambda match: match.split("]"), matches))
         links = []
         for piece in pieces:
@@ -72,3 +73,12 @@ class TextNodeParser():
             else:
                 new_nodes.append(old_node)
         return new_nodes
+    
+    def text_to_textnodes(text):
+        node_list = [TextNode(text, TextType.TEXT)]
+        node_list = TextNodeParser.split_nodes_image(node_list)
+        node_list = TextNodeParser.split_nodes_link(node_list)
+        node_list = TextNodeParser.split_nodes_delimiter(node_list, "**", TextType.BOLD)
+        node_list = TextNodeParser.split_nodes_delimiter(node_list, "*", TextType.ITALIC)
+        node_list = TextNodeParser.split_nodes_delimiter(node_list, "`", TextType.CODE)      
+        return node_list
