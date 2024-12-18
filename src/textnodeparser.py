@@ -75,10 +75,10 @@ class TextNodeParser():
         return new_nodes
     
     def text_to_textnodes(text):
-        node_list = [TextNode(text, TextType.TEXT)]
+        node_list = [TextNode(text.strip(), TextType.TEXT)]
         node_list = TextNodeParser.split_nodes_image(node_list)
         node_list = TextNodeParser.split_nodes_link(node_list)
         node_list = TextNodeParser.split_nodes_delimiter(node_list, "**", TextType.BOLD)
         node_list = TextNodeParser.split_nodes_delimiter(node_list, "*", TextType.ITALIC)
-        node_list = TextNodeParser.split_nodes_delimiter(node_list, "`", TextType.CODE)      
+        node_list = TextNodeParser.split_nodes_delimiter(node_list, "`", TextType.CODE)
         return node_list

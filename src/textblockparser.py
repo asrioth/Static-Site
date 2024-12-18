@@ -82,29 +82,25 @@ class TextBlockParser():
     def get_block_type_text_node(block_type, block):
         match block_type:
             case TextBlockType.QUOTE:
-                return (block[1:], [TextNode(block[0], TextType.TEXT)])
+                return block[1:]
             case TextBlockType.UNORDERED_LIST:
-                return (block[2:], [TextNode(block[:2], TextType.TEXT)])
+                return block[2:]
             case TextBlockType.ORDERED_LIST:
-                return (block[3:], [TextNode(block[:3], TextType.TEXT)])
+                return block[3:]
             case TextBlockType.CODE:
-                return (block[3:-3], [TextNode(block[:3], TextType.TEXT), TextNode(block[-3:], TextType.TEXT)])
+                return block[3:-3]
             case TextBlockType.PARAGRAPH:
-                return (block, [])
+                return block
             case TextBlockType.HEADING:
                 num_hashes = len(re.match(r"^#{1,6} ", block)[0])
-                return (block[num_hashes:], [TextNode(block[:num_hashes], TextType.TEXT)])
+                return block[num_hashes:]
             case _:
                 raise Exception("Unrecognised block type")
 
     def block_to_children_nodes(block, block_type):
         children_nodes = []
-        block, children = TextBlockParser.get_block_type_text_node(block_type, block)
-        if len(children) >= 1:
-            children_nodes.append(children[0])
+        block = TextBlockParser.get_block_type_text_node(block_type, block)
         children_nodes.extend(TextNodeParser.text_to_textnodes(block))
-        if len(children) == 2:
-            children_nodes.append(children[1])
         children_nodes = list(map(lambda node: node.text_node_to_html_node(), children_nodes))
         return children_nodes
 
