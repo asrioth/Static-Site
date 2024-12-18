@@ -22,6 +22,9 @@ class HTMLNode():
     def __repr__(self):
         return f"HTMLNode({self.tag},{self.value},{self.children},{self.props})"
     
+    def __eq__(self, html_node):
+        return self.tag == html_node.tag and self.value == html_node.value and self.children == html_node.children and self.props == html_node.props
+    
     def tag_wrap(self, tag_state = TagState.START):
         match tag_state:
             case TagState.START:
