@@ -23,6 +23,19 @@ def generate_page(from_path, template_path, dest_path):
     template = template.replace("{{ Content }}", html_string)
     with open(dest_path, 'x') as index:
         index.write(template)
+
+def generate_pages_recursive(dir_path_content, template_path, dest_dir_path):
+    content_files = os.listdir(dir_path_content)
+    for content_file in content_files:
+        file_path = os.path.join(dir_path_content, content_file)
+        dest_path = os.path.join(dest_dir_path, content_file)
+        if content_file.endswith(".md"):
+            dest_path = f"{dest_path[:-2]}html"
+            generate_page(file_path, template_path, dest_path)
+        elif not os.path.isfile(file_path):
+            if not os.path.exists(dest_path):
+                os.mkdir(dest_path)
+            generate_pages_recursive(file_path, template_path, dest_path)
     
 def copy_folder_to_public(folder_path):
     contents = os.listdir(folder_path)
@@ -39,7 +52,7 @@ def main():
         shutil.rmtree("public")
     os.mkdir("public")
     copy_folder_to_public("static/")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    generate_pages_recursive("content", "template.html", "public")
 
 if __name__ == "__main__":
     main()
